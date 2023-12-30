@@ -2,6 +2,7 @@ package com.ozanyazici.retrofitkotlin.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ozanyazici.retrofitkotlin.adapter.RecyclerViewAdapter
@@ -17,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity(){
     private var recyclerViewAdapter: RecyclerViewAdapter? = null
     //Disposable
     private lateinit var compositeDisposable: CompositeDisposable
-    private var job : Job? = null
+    //private var job : Job? = null
     //Coroutine hata kontrolü için
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
         println("Error: ${throwable.localizedMessage}")
@@ -64,15 +66,17 @@ class MainActivity : AppCompatActivity(){
             .build().create(CryptoAPI::class.java)
 
         //Aynı işlemin coroutines kullanılarak yapılışı
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = retrofit.getData()
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        cryptoModels = ArrayList(it)
-                        cryptoModels?.let {
-                            recyclerViewAdapter = RecyclerViewAdapter(it)
-                            binding.recyclerView.adapter = recyclerViewAdapter
+        /*job =*/ lifecycleScope.launch(Dispatchers.IO + exceptionHandler) {
+            supervisorScope {
+                val response = retrofit.getData()
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        response.body()?.let {
+                            cryptoModels = ArrayList(it)
+                            cryptoModels?.let {
+                                recyclerViewAdapter = RecyclerViewAdapter(it)
+                                binding.recyclerView.adapter = recyclerViewAdapter
+                            }
                         }
                     }
                 }
@@ -138,6 +142,6 @@ class MainActivity : AppCompatActivity(){
 
     override fun onDestroy() {
         super.onDestroy()
-        job?.cancel()
+        //job?.cancel() lifecyclescope kullandığım için job kullanmama gerek kalmadı
     }
 }

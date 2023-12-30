@@ -61,4 +61,5 @@ dependencies {
     //Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC2")//Temel coroutine özelliklerini içerir. Bu kütüphane, coroutine builder'ları, suspend fonksiyonları ve coroutine kapsamlarını içerir. Bu bağımlılık, herhangi bir platforma özgü olmayan temel coroutine özelliklerini sağlar.
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")//Bu bağımlılık, Android platformu için özel olarak optimize edilmiş coroutine'leri içerir. Özellikle UI thread üzerinde kullanılmak üzere tasarlanmıştır ve Android uygulamalarında asenkron programlama için kullanılır.
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")//lifecycleScope u kullanmak için
 }
